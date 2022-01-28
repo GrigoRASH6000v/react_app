@@ -1,0 +1,9 @@
+.post-add {
+  display: flex;
+  column-gap: 10px;
+}
+.post-filter {
+  display: flex;
+  justify-content: center;
+  column-gap: 10px;
+}

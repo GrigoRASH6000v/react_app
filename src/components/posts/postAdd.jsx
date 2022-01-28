@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { Input } from "../ui/input";
+import "./style.css";
 
 export const PostAdd = ({ handler }) => {
   const [title, setTitle] = useState("");

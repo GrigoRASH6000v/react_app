@@ -1,66 +1,69 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useState } from "react";
 import { Posts } from "./components/posts";
 import { PostAdd } from "./components/posts/postAdd";
-import { Select } from "./components/ui/select/select";
-import { Option } from "./components/ui/select/option";
+import { PostFilter } from "./components/posts/postFilter";
+import { Modal } from "./components/ui/modal/modal";
 
 function App() {
-  const options = [
-    {
-      value: 1,
-      title: "option1",
-    },
-    {
-      value: 2,
-      title: "option2",
-    },
-    {
-      value: 3,
-      title: "option3",
-    },
-  ];
+  const [searchValue, setSearchValue] = useState("");
   const [selectValue, setSelectValue] = useState("");
   const [posts, setPosts] = useState([
     {
       id: 1,
-      title: "test 1",
-      description: "description",
+      title: "Арбуз",
+      description: "однолетнее травянистое растение, имеющее плод ягоду",
     },
     {
       id: 2,
-      title: "test 2",
-      description: "description",
+      title: "Дыня",
+      description:
+        "тепло - и светолюбивое растение, устойчивое к засолению почвы и засухе, плохо переносит повышенную влажность воздуха",
     },
     {
       id: 3,
-      title: "test 3",
-      description: "description",
+      title: "Яблоко",
+      description:
+        " плод одноименного дерева, популярной во всем мире садовой культуры. Внешний облик характеризуется шарообразной формой и тонкой гладкой кожицей, которая в зависимости от сорта при созревании окрашивается в различные оттенки желтого, красного и зеленого цветов.",
     },
     {
       id: 4,
-      title: "test 4",
-      description: "description",
+      title: "Груша",
+      description:
+        "Листья темно-зеленые, с блеском, кожистые, овальные, округлые или продолговато-округлые, заостренные, мелкозубчатые, сидят на длинных черешках.",
     },
   ]);
+  const setters = {
+    searchValue: setSearchValue,
+    selectValue: setSelectValue,
+  };
   const removeHandler = id => setPosts(posts.filter(post => post.id !== id));
   const addPostHandler = data => {
     setPosts([...posts, { id: +new Date(), ...data }]);
     return true;
   };
+  const sortedPosts = useMemo(() => {
+    if (!selectValue) return posts;
+    return [...posts].sort((a, b) =>
+      a[selectValue.value].localeCompare(b[selectValue.value])
+    );
+  }, [selectValue, posts]);
+  const sortAndSearchedPosts = useMemo(() => {
+    return [...sortedPosts].filter(p =>
+      p.title.toLowerCase().match(searchValue.toLowerCase())
+    );
+  }, [searchValue, sortedPosts]);
   return (
     <div className="App">
-      <h3>{selectValue.title}</h3>
-      <Select
-        handler={value => setSelectValue(value)}
-        label="Выберите элемент из списка"
-      >
-        {options.map(option => (
-          <Option {...option} key={option.value} />
-        ))}
-      </Select>
-      <PostAdd handler={addPostHandler} />
-      <Posts posts={posts} change={removeHandler} />
+      <Modal />
+      <div className="App__header">
+        <PostAdd handler={addPostHandler} />
+        <PostFilter
+          values={{ selectValue, searchValue }}
+          handler={(name, data) => setters[name](data)}
+        />
+      </div>
+      <Posts posts={sortAndSearchedPosts} change={removeHandler} />
     </div>
   );
 }

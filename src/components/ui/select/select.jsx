@@ -4,15 +4,18 @@ import "./style.css";
 const OptionContext = React.createContext();
 const Select = props => {
   const cb = value => {
-    setValue(value);
     props.handler(value);
+    setVisible(false);
   };
-  const [value, setValue] = useState("");
   const [visible, setVisible] = useState(false);
   return (
-    <div className="select {visible ? 'select--show' : ''}">
+    <div className={`select ${visible ? "select--show" : ""}`}>
       <button onClick={() => setVisible(!visible)} className="select__toggle">
-        {value ? value.title : "Выберите из списка"}
+        {props.value
+          ? props.value.title
+          : props.placeholder
+          ? props.placeholder
+          : "Выберите из списка"}
       </button>
 
       {visible ? (
